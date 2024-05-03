@@ -1,0 +1,42 @@
+defaultTasks 'run'
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
+    maven { url "https://jade.tilab.com/maven/" }
+}
+
+dependencies {
+    implementation 'io.github.jason-lang:jason-interpreter:3.2.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/java'
+            srcDir 'src/env'
+        }
+        resources {
+            srcDir 'rsc'
+        }
+    }
+}
+
+task run (type: JavaExec, dependsOn: 'classes') {
+    description 'runs the application'
+    mainClass = 'jason.infra.local.RunLocalMAS'
+    args = ['factory.mas2j']
+	// options:
+	//     args = ['factory.mas2j', '--debug', '--no-net', '--empty-mas']
+	//     args = ['factory.mas2j', '--log-conf', 'l.p'] // to use file l.p to configure logging
+    classpath sourceSets.main.runtimeClasspath
+}
+
+task runJade (type: JavaExec, dependsOn: 'classes') {
+    description 'runs the application with Jade infrastructure'
+    mainClass = 'jason.infra.jade.RunJadeMAS'
+    args = [ 'factory.mas2j' ]
+    classpath sourceSets.main.runtimeClasspath
+}
