@@ -32,6 +32,8 @@ public class FactoryEnv extends Environment {
         model.setView(view);
 
         updatePercepts();
+
+        view.repaint();
     }
 
 
@@ -48,13 +50,21 @@ public class FactoryEnv extends Environment {
             {
                 // model.nextSlot();
             }
-            else if (action.getFunctor().equals("move_towards"))
+            else if(action.getFunctor().equals("move_towards"))
             {
                 int x = (int)((NumberTerm)action.getTerm(0)).solve();
                 int y = (int)((NumberTerm)action.getTerm(1)).solve();
 
                 model.moveTowards(id, x, y);
                 updatePercept(id);
+            }
+            else if(action.getFunctor().equals("show"))
+            {
+                int count = (int)((NumberTerm)action.getTerm(0)).solve();
+                model.setParts(id, count);
+                Location l = model.getAgPos(id);
+                view.update(l.x, l.y);
+                // view.repaint();
             }
             else
             {
@@ -64,7 +74,7 @@ public class FactoryEnv extends Environment {
             // updatePercepts();
             informAgsEnvironmentChanged();
 
-            Thread.sleep(500);
+            Thread.sleep(300);
             return true;
         }
         catch (Exception e)
@@ -80,13 +90,15 @@ public class FactoryEnv extends Environment {
         String name = model.agName(id);
         Location l = model.getAgPos(id);
 
-        Literal percept = Literal.parseLiteral(
-            String.format("pos(%d,%d)", l.x, l.y));
+        Literal pos = Literal.parseLiteral(
+            String.format("pos(%d, %d)", l.x, l.y));
+        Literal part = Literal.parseLiteral(
+            String.format("pos(p, %d, %d)", model.lPart.x, model.lPart.y));
 
         clearPercepts(name);
-        addPercept(name, percept);
+        addPercept(name, pos);
+        addPercept(name, part);
     }
-
 
     void updatePercepts()
     {

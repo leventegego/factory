@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
 class FactoryModel extends GridWorldModel {
 
@@ -26,6 +27,8 @@ class FactoryModel extends GridWorldModel {
     public List<Integer> lw;
     public Map<Integer, String> id2name;
     public Map<String, Integer> name2id;
+    public List<Integer> nPart;
+    public Location lPart;
 
 
     public FactoryModel(int size, int nAssembler, int nCarrier, int nWorker)
@@ -39,59 +42,62 @@ class FactoryModel extends GridWorldModel {
         lw = new ArrayList<Integer>();
         id2name = new HashMap<Integer, String>();
         name2id = new HashMap<String, Integer>();
+        nPart = new ArrayList<Integer>(Collections.nCopies(nAgents, 0));
 
         int id = 0;
-        for(int i = 0; i < nAssembler; ++i) registerAg(id++, "assembler", i + 1);
-        for(int i = 0; i < nCarrier; ++i)   registerAg(id++, "carrier", i + 1);
-        for(int i = 0; i < nWorker; ++i)    registerAg(id++, "worker", i + 1);
+        for(int i = 0; i < nAssembler; ++i) registerAg(id++, "assembler", i + 1, la, i, 0);
+        for(int i = 0; i < nCarrier; ++i)   registerAg(id++, "carrier",   i + 1, lc, i, size - 1);
+        for(int i = 0; i < nWorker; ++i)    registerAg(id++, "worker",    i + 1, lw, size - 1, i);
 
-
-        for(int i = 0; i < nAgents; ++i)
-        {
-            setAgPos(i, i, 0);
-        }
-
-        // add(PART, 3, 0);
-        // add(PART, GSize-1, 0);
-        // add(PART, 1, 2);
-        // add(PART, 0, GSize-2);
-        // add(PART, GSize-1, GSize-1);
+        lPart = new Location(7, 7);
+        add(PART, lPart.x, lPart.y);
     }
 
-    void registerAg(int id, String type, int number)
+    void registerAg(int id, String type, int number, List<Integer> list, int x, int y)
     {
-        if(type.equals("assembler")) la.add(id);
-        if(type.equals("carrier"))   lc.add(id);
-        if(type.equals("worker"))    lw.add(id);
-
         String name = type + number;
+        list.add(id);
         name2id.put(name, id);
         id2name.put(id, name);
+        setAgPos(id, x, y);
+    }
+
+    void setParts(int id, int count)
+    {
+        nPart.set(id, count);
+    }
+
+    Integer getParts(int id)
+    {
+        return nPart.get(id);
     }
 
     void moveTowards(int ag, int x, int y) throws Exception
     {
-
+        Location t = new Location(x, y);
         Location l = getAgPos(ag);
-        Location l_ = l;
+        Location[] nb = { (Location)l.clone(), (Location)l.clone(), (Location)l.clone(), (Location)l.clone() };
+        nb[0].x += 1;
+        nb[1].x -= 1;
+        nb[2].y += 1;
+        nb[3].y -= 1;
 
-        if (l.x < x) l_.x++;
-        if (l.x > x) l_.x--;
-        if (l.y < y) l_.y++;
-        if (l.y > y) l_.y--;
+        int best = -1;
+        for(int i = 0; i < 4; ++i)
+            if(inGrid(nb[i]) && getAgAtPos(nb[i]) == -1 && (best == -1 ||
+                nb[i].distanceEuclidean(t) < nb[best].distanceEuclidean(t)))
+                best = i;
 
-        if(getAgAtPos(l_) != -1)
-            return;
-
-        setAgPos(ag, l_);
+        if(best != -1)
+            setAgPos(ag, nb[best]);
     }
 
-    String agName(int id)
+    public String agName(int id)
     {
         return id2name.get(id);
     }
 
-    int agId(String name)
+    public int agId(String name)
     {
         return name2id.get(name);
     }
