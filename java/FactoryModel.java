@@ -27,6 +27,7 @@ class FactoryModel extends GridWorldModel {
     public List<Integer> lw;
     public Map<Integer, String> id2name;
     public Map<String, Integer> name2id;
+    public List<Boolean> marks;
     public List<Integer> nPart;
     public Location lPart;
 
@@ -42,6 +43,7 @@ class FactoryModel extends GridWorldModel {
         lw = new ArrayList<Integer>();
         id2name = new HashMap<Integer, String>();
         name2id = new HashMap<String, Integer>();
+        marks = new ArrayList<Boolean>(Collections.nCopies(nAgents, false));
         nPart = new ArrayList<Integer>(Collections.nCopies(nAgents, 0));
 
         int id = 0;

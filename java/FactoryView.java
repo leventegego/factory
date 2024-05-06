@@ -38,25 +38,28 @@ class FactoryView extends GridWorldView
     public void drawAgent(Graphics g, int x, int y, Color c, int id)
     {
         // String label = String.valueOf(id) + " " + model.getParts(id);
-        String label = String.valueOf(model.getParts(id));
         String name = model.agName(id);
+        Boolean mark = model.marks.get(id);
 
         Color bg = null;
         Color fg = null;
-        char t = name.charAt(0);
+        String label = null;
         switch(name.charAt(0))
         {
             case 'a':
-            bg = Color.gray;
+            bg = (mark ? Color.red : Color.gray);
             fg = Color.white;
+            label = String.valueOf(model.getParts(id));
             break;
             case 'c':
-            bg = Color.orange;
+            bg = (mark ? Color.orange : Color.yellow);
             fg = Color.black;
+            label = String.valueOf(model.getParts(id));
             break;
             case 'w':
             bg = Color.blue;
             fg = Color.white;
+            label = "W";
             break;
         }
 

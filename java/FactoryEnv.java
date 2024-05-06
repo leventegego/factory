@@ -16,9 +16,6 @@ public class FactoryEnv extends Environment {
     private FactoryModel model;
     private FactoryView  view;
 
-    public static final Term mv = Literal.parseLiteral("move(next)");
-
-
     @Override
     public void init(String[] args)
     {
@@ -43,12 +40,16 @@ public class FactoryEnv extends Environment {
         try
         {
             int id = model.agId(name);
+            Location l = model.getAgPos(id);
 
             logger.info(name + ": " + action);
 
-            if (action.equals(mv))
+            if (action.getFunctor().equals("mark"))
             {
-                // model.nextSlot();
+                int x = (int)((NumberTerm)action.getTerm(0)).solve();
+                model.marks.set(id, x == 1);
+
+                view.update(l.x, l.y);
             }
             else if(action.getFunctor().equals("move_towards"))
             {
@@ -62,19 +63,16 @@ public class FactoryEnv extends Environment {
             {
                 int count = (int)((NumberTerm)action.getTerm(0)).solve();
                 model.setParts(id, count);
-                Location l = model.getAgPos(id);
                 view.update(l.x, l.y);
-                // view.repaint();
             }
             else
             {
                 return false;
             }
 
-            // updatePercepts();
             informAgsEnvironmentChanged();
 
-            Thread.sleep(300);
+            // Thread.sleep(300);
             return true;
         }
         catch (Exception e)

@@ -1,5 +1,4 @@
 refill(reject).
-
 !start.
 
 +!start <-
@@ -22,7 +21,7 @@ refill(reject).
     !remove(1);
     !show;
     !checkrefill;
-    !checkoffers;
+    !checkoffer;
     !wait;
     !loop.
 
@@ -48,27 +47,32 @@ refill(reject).
 
 +!checkrefill: refill(accept) | refill(inbound).
 +!checkrefill: counter(C) & C <= 50 <-
+    mark(1);
     -+refill(accept);
     .my_name(A);
     .print("request");
     .broadcast(tell, request(A)).
 +!checkrefill <-
-    -+refill(reject).
+    mark(0).
 
 
-+!checkoffers: offer(C) & refill(accept) <-
++!checkoffer: offer(C) & refill(accept) <-
     .print("accept");
     -+refill(inbound);
     .my_name(A);
     .broadcast(untell, request(A));
     .send(C, achieve, accept);
     .abolish(offer(C));
-    !checkoffers.
-+!checkoffers: offer(C) <-
+    !checkoffer.
++!checkoffer: offer(C) <-
     .print("reject");
     .send(C, achieve, reject);
     .abolish(offer(C));
-    !checkoffers.
-+!checkoffers.
+    !checkoffer.
++!checkoffer.
 
-
++offer(_): refill(accept).
++offer(C) <-
+    .print("auto-reject");
+    .send(C, achieve, reject);
+    .abolish(offer(C)).
