@@ -59,7 +59,10 @@
     !reset.
 
 +!goto(X, Y, _): pos(X, Y) | broken(true).
-+!goto(X, Y, break): request(_).
++!goto(_, _, break): request(_).
++!goto(X, Y, F): worker(close) <-
+    .wait(300);
+    !goto(X, Y, F).
 +!goto(_, _, _): .random(R) & R < 0.01 <-
     -+broken(true);
     mark(1).

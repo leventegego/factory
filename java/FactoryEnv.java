@@ -28,7 +28,12 @@ public class FactoryEnv extends Environment {
         view  = new FactoryView(model);
         model.setView(view);
 
-        updatePercepts();
+        for(int i = 0; i < model.nAgents; ++i)
+        {
+            addPosPercept(i);
+            addPartPercept(i);
+        }
+        updateWorkerPercepts();
 
         view.repaint();
     }
@@ -57,7 +62,10 @@ public class FactoryEnv extends Environment {
                 int y = (int)((NumberTerm)action.getTerm(1)).solve();
 
                 model.moveTowards(id, x, y);
-                updatePercept(id);
+                clearPercepts(name);
+                addPosPercept(id);
+                addPartPercept(id);
+                updateWorkerPercepts();
             }
             else if(action.getFunctor().equals("show"))
             {
@@ -82,30 +90,52 @@ public class FactoryEnv extends Environment {
         }
     }
 
+    int d2(Location l1, Location l2)
+    {
+        int dx = l1.x - l2.x;
+        int dy = l1.y - l2.y;
+        return dx * dx + dy * dy;
+    }
 
-    void updatePercept(int id)
+    void updateWorkerPercepts()
+    {
+        for(Integer c : model.lc)
+        {
+            int closest = 9999999;
+            for(Integer w : model.lw)
+                closest = Math.min(closest, d2(model.getAgPos(c), model.getAgPos(w)));
+
+            String name = model.agName(c);
+            Literal percept = Literal.parseLiteral(String.format(
+                "worker(%s)", (closest <= 2 ? "close" : "far")));
+
+            removePercept(name, Literal.parseLiteral("worker(close)"));
+            removePercept(name, Literal.parseLiteral("worker(far)"));
+            addPercept(name, percept);
+        }
+    }
+
+    void addPartPercept(int id)
+    {
+        String name = model.agName(id);
+
+        Literal part = Literal.parseLiteral(String.format(
+            "pos(p, %d, %d)", model.lPart.x, model.lPart.y));
+
+        addPercept(name, part);
+    }
+
+
+    void addPosPercept(int id)
     {
         String name = model.agName(id);
         Location l = model.getAgPos(id);
 
-        Literal pos = Literal.parseLiteral(
-            String.format("pos(%d, %d)", l.x, l.y));
-        Literal part = Literal.parseLiteral(
-            String.format("pos(p, %d, %d)", model.lPart.x, model.lPart.y));
+        Literal pos = Literal.parseLiteral(String.format(
+            "pos(%d, %d)", l.x, l.y));
 
-        clearPercepts(name);
         addPercept(name, pos);
-        addPercept(name, part);
     }
-
-    void updatePercepts()
-    {
-        // clearPercepts();
-        for(int i = 0; i < model.nAgents; ++i)
-            updatePercept(i);
-    }
-
-
 
 
 }

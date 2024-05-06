@@ -1,4 +1,7 @@
 
+d2(X1, Y1, X2, Y2, D) :-
+    ((X2 - X1) * (X2 - X1)) + ((Y2 - Y1) * (Y2 - Y1)) = D.
+
 !start.
 
 +!start <-
@@ -9,7 +12,7 @@
 +!reset <-
     .abolish(client(C, X, Y));
     ?home(X, Y);
-    !goto(X, Y);
+    !goto(X, Y, 0);
     !listen.
 
 
@@ -26,7 +29,7 @@
     .print("accepted");
     ?pos(p, XW, YW);
     ?client(C, XC, YC);
-    !goto(XC + 1, YC);
+    !goto(XC, YC, 1);
     .send(C, achieve, reset);
     !reset.
 +!reject <-
@@ -35,9 +38,9 @@
 
 
 
-+!goto(X, Y): pos(X, Y).
-+!goto(X, Y) <-
++!goto(X, Y, D): pos(XP, YP) & d2(X, Y, XP, YP, DP) & DP <= D.
++!goto(X, Y, D) <-
     move_towards(X, Y);
     .wait(300);
-    !goto(X, Y).
+    !goto(X, Y, D).
 
