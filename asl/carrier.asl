@@ -1,4 +1,7 @@
 
+d2(X1, Y1, X2, Y2, D) :-
+    ((X2 - X1) * (X2 - X1)) + ((Y2 - Y1) * (Y2 - Y1)) = D.
+
 !start.
 
 +!start <-
@@ -14,7 +17,7 @@
     -+broken(false);
     mark(0);
     ?home(X, Y);
-    !goto(X, Y, break);
+    !goto(X, Y, 0, break);
     !listen.
 
 +!listen: broken(true) <-
@@ -33,9 +36,9 @@
     ?client(A);
     ?pos(A, XA, YA);
 
-    !goto(XC, YC, ignore);
+    !goto(XC, YC, 1, ignore);
     !load;
-    !goto(XA, YA + 1, ignore);
+    !goto(XA, YA, 1, ignore);
     !finish.
 +!reject <-
     .print("rejected");
@@ -58,29 +61,31 @@
     show(0);
     !reset.
 
-+!goto(X, Y, _): pos(X, Y) | broken(true).
-+!goto(_, _, break): request(_).
-+!goto(X, Y, F): worker(close) <-
-    .wait(300);
-    !goto(X, Y, F).
-+!goto(_, _, _): .random(R) & R < 0.01 <-
-    -+broken(true);
-    mark(1).
-+!goto(X, Y, F) <-
-    move_towards(X, Y);
-    .wait(300);
-    !goto(X, Y, F).
-
-
-
-
-
-
 +!maintenance <-
     .my_name(C);
     ?pos(X, Y);
     .broadcast(tell, request(C, X, Y));
     !checkoffer.
+
+
+
+
++!goto(X, Y, D, _): pos(XP, YP) & d2(X, Y, XP, YP, DP) & DP <= D.
++!goto(_, _, _, _): broken(true).
++!goto(_, _, break): request(_).
++!goto(_, _, _, _): .random(R) & R < 0.01 <-
+    -+broken(true);
+    mark(1).
++!goto(X, Y, D, F): worker(close) <-
+    .wait(1000);
+    move_towards(X, Y);
+    .wait(300);
+    !goto(X, Y, D, F).
++!goto(X, Y, D, F) <-
+    move_towards(X, Y);
+    .wait(300);
+    !goto(X, Y, D, F).
+
 
 
 

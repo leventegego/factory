@@ -49,14 +49,7 @@ public class FactoryEnv extends Environment {
 
             logger.info(name + ": " + action);
 
-            if (action.getFunctor().equals("mark"))
-            {
-                int x = (int)((NumberTerm)action.getTerm(0)).solve();
-                model.marks.set(id, x == 1);
-
-                view.update(l.x, l.y);
-            }
-            else if(action.getFunctor().equals("move_towards"))
+            if(action.getFunctor().equals("move_towards"))
             {
                 int x = (int)((NumberTerm)action.getTerm(0)).solve();
                 int y = (int)((NumberTerm)action.getTerm(1)).solve();
@@ -66,6 +59,13 @@ public class FactoryEnv extends Environment {
                 addPosPercept(id);
                 addPartPercept(id);
                 updateWorkerPercepts();
+            }
+            else if (action.getFunctor().equals("mark"))
+            {
+                int x = (int)((NumberTerm)action.getTerm(0)).solve();
+                model.marks.set(id, x == 1);
+
+                view.update(l.x, l.y);
             }
             else if(action.getFunctor().equals("show"))
             {

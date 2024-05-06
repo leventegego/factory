@@ -37,7 +37,6 @@ class FactoryView extends GridWorldView
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id)
     {
-        // String label = String.valueOf(id) + " " + model.getParts(id);
         String name = model.agName(id);
         Boolean mark = model.marks.get(id);
 
@@ -66,7 +65,6 @@ class FactoryView extends GridWorldView
         super.drawAgent(g, x, y, bg, -1);
         g.setColor(fg);
         super.drawString(g, x, y, defaultFont, label);
-        g.setColor(Color.red);
     }
 
 }
