@@ -7,7 +7,7 @@ refill(reject).
     !show;
 
     .random(I);
-    +interval(I * 0 + 200);
+    +interval(I * 1000 + 200);
     .my_name(A);
 
     ?pos(X, Y);
