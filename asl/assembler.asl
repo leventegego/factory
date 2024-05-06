@@ -38,7 +38,8 @@ refill(reject).
 +!remove(X) : not counter(0) <-
     ?counter(C);
     -+counter(C - X).
-+!remove(X).
++!remove(X) <-
+    -+counter(0).
 +!show <-
     ?counter(C);
     show(C).

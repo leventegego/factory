@@ -48,7 +48,7 @@ class FactoryModel extends GridWorldModel {
 
         int id = 0;
         for(int i = 0; i < nAssembler; ++i) registerAg(id++, "assembler", i + 1, la, i, 0);
-        for(int i = 0; i < nCarrier; ++i)   registerAg(id++, "carrier",   i + 1, lc, i, size - 1);
+        for(int i = 0; i < nCarrier; ++i)   registerAg(id++, "carrier",   i + 1, lc, i * 2, size - 1);
         for(int i = 0; i < nWorker; ++i)    registerAg(id++, "worker",    i + 1, lw, size - 1, i);
 
         lPart = new Location(7, 7);
