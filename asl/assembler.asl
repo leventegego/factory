@@ -7,7 +7,7 @@ refill(reject).
     !show;
 
     .random(I);
-    +interval(I * 1000 + 200);
+    +interval(I * 0 + 200);
     .my_name(A);
 
     ?pos(X, Y);
@@ -35,7 +35,7 @@ refill(reject).
     ?counter(C);
     -+counter(C + X);
     -+refill(reject).
-+!remove(X) : not counter(0) <-
++!remove(X) : counter(C) & C > 0 <-
     ?counter(C);
     -+counter(C - X).
 +!remove(X) <-
