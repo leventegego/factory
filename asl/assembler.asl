@@ -1,10 +1,10 @@
 refill(reject).
+counter(0).
 !start.
 
 +!start <-
     .random(C);
-    +counter(C * 50 + 50);
-    !show;
+    !add(C * 50 + 50);
 
     .random(I);
     +interval(I * 1000 + 300);
@@ -19,7 +19,6 @@ refill(reject).
 
 +!loop <-
     !remove(1);
-    !show;
     !checkrefill;
     !checkoffer;
     !wait;
@@ -29,33 +28,37 @@ refill(reject).
     ?interval(I);
     .wait(I).
 
++!show: counter(C) & C <= 50 <-
+    show(C);
+    mark(1).
++!show <-
+    ?counter(C);
+    show(C);
+    mark(0).
 
 
 +!add(X) <-
+    -+refill(reject);
     ?counter(C);
     -+counter(C + X);
-    -+refill(reject).
+    !show.
 +!remove(X) : counter(C) & C > 0 <-
     ?counter(C);
-    -+counter(C - X).
+    -+counter(C - X);
+    !show.
 +!remove(X) <-
-    -+counter(0).
-+!show <-
-    ?counter(C);
-    show(C).
+    -+counter(0);
+    !show.
 
 
 
 +!checkrefill: refill(accept) | refill(inbound).
 +!checkrefill: counter(C) & C <= 50 <-
-    mark(1);
     -+refill(accept);
     .my_name(A);
     .print("request");
     .broadcast(tell, request(A)).
-+!checkrefill <-
-    mark(0).
-
++!checkrefill.
 
 +!checkoffer: offer(C) & refill(accept) <-
     .print("accept");
