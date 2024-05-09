@@ -107,7 +107,7 @@ public class FactoryEnv extends Environment {
 
             String name = model.agName(c);
             Literal percept = Literal.parseLiteral(String.format(
-                "worker(%s)", (closest <= 2 ? "close" : "far")));
+                "worker(%s)", (closest <= 5 ? "close" : "far")));
 
             removePercept(name, Literal.parseLiteral("worker(close)"));
             removePercept(name, Literal.parseLiteral("worker(far)"));
